@@ -8,7 +8,7 @@
 }
 
 .slider_button{
-    @apply opacity-75;
+    @apply opacity-80;
     @apply shadow-xl;
     outline: none;
     transition: all;
