@@ -18369,11 +18369,12 @@ h1, h2, h3 {
 
 /* background */
 
-.wrapper {
+#wrapper {
   height:100vh;
   background-color:#015F67;
   background-image: url("./images/background_image.jpg");
   background-size: cover;
+  transition-duration: 100ms;
 }
 
 .card, .untitled-card{
@@ -18400,7 +18401,7 @@ h1, h2, h3 {
 
 /* positioning */
 
-.content {
+#content_wrapper {
   position: absolute;
   top: 50%;
   left: 50%;
