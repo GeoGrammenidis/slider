@@ -51,19 +51,8 @@ h1, h2, h3 {
 .untitled-card ul {
     padding-top: 10px;
 }
-/* background */
 .wrapper {
     height:100vh;
-/*     background-color:#015F67; */
-/*     background-image: url("./images/background_image.jpg"); */
-/*     background-image: url(), linear-gradient(red, yellow), linear-gradient(black, transparent); */
-/*     background: linear-gradient(148deg,
-     rgb(12,131,137) 0%, rgb(12,131,137) 11.8%, 
-     rgb(10, 89, 94) 12% ,rgb(10, 101, 105) 13%, rgb(10, 104, 109) 15.8%, 
-     rgb(6, 69, 71) 16%,rgb(7, 80, 83) 17%, rgb(0,80,87) 20% ),linear-gradient(148deg,
-     transparent 0%, transparent 50%, red 100% ); */
-/*      background: radial-gradient(circle at center, #e66465, transparent),
-            radial-gradient(circle at center, transparent, #4d9f0c); */
     background: radial-gradient(ellipse at center, rgb(3,111,121) 0%, rgb(3,111,121) 10%, transparent 50%), linear-gradient(148deg,
         rgb(12,131,137) 0%, rgb(12,131,137) 11.8%, 
         rgb(10, 89, 94) 12% ,rgb(10, 101, 105) 13%, rgb(10, 104, 109) 15.8%, 
