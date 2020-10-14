@@ -1,8 +1,9 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa'
+import { v4 as uuidv4 } from 'uuid';
 
-const ws = new WebSocket('wss://ex0ndlr49f.execute-api.eu-central-1.amazonaws.com/dev')
+var ws = new WebSocket('wss://ex0ndlr49f.execute-api.eu-central-1.amazonaws.com/dev')
 
 const pinax = [
     {
@@ -156,53 +157,68 @@ function countReducer (state, action) {
             return newState; 
         case 'set':
             console.log("setted:", action.data)
-            return parseInt(action.data);
+            var newState = parseInt(action.data);
+            if(action.url==="/control") {
+                console.log("went in here");
+                ws.send(`{"message":"${newState}", "action":"message"}`)
+            }
+            return newState;
         default:
             throw new Error("This action is not supported.")
     }
 }
 export default function Gallery() {
-    const [count, dispatch] = React.useReducer(countReducer, 0)
+    const [ count, dispatch ] = React.useReducer(countReducer, 0);
+    const [ connected, setConnected ] = React.useState(false);
     const { url } = useRouteMatch()
 
     React.useEffect(() => {
         ws.onopen = () => {
             if(url==="/control"){
-                ws.send('{"message":"0","action":"message"}');
+                dispatch({type:'set', data:'0', url})
             }
         }
         ws.onerror = err => {
             console.log("socket encountered error!");
+            ws.close();
         }
         ws.onmessage = evt => {
             if(url!=="/control"){
                 ws.onmessage = evt => {
-                    console.log("got message:",evt.data);
-                    dispatch({type:'set', data:evt.data})
+                    if(evt.data==-1){
+                        setConnected(false)
+                    }else{
+                        !connected&&setConnected(true)
+                        console.log("got message:",evt.data);
+                        dispatch({type:'set', data:evt.data, url})
+                    }
                 }
             }
         }
-/*         if(url!=="/control"){
-            console.log("went here")
-            ws.onmessage = evt => {
-                console.log("got message")
-                dispatch({type:'set', data:evt.data})
+        ws.onclose = e => {
+            if(connected)
+                ws = new WebSocket('wss://ex0ndlr49f.execute-api.eu-central-1.amazonaws.com/dev')
+        }
+        return () => {
+            setConnected(false)
+            if(url!=="/control"){
+                dispatch({type:'set', data:'-1', url})
             }
-        } */
-        return () => {}
+            ws.close();
+        }
     }, [])
-
+    console.log("Connected:", connected);
     return (
         <div className="wrapper">
             <div className="content">
                 {/* Titled contents */}
                 {pinax[count].type==="titledContent"&&<>
                     <div className="content-title">
-                        <div className="title-card">
+                        <div className="title-card" key={uuidv4()}>
                             <h1>{pinax[count].title}</h1>
                         </div>
                     </div>
-                    <div className="content-body">
+                    <div className="content-body" key={uuidv4()}>
                         <div className="card with-padding" >
                             {pinax[count].content.title&&
                                 <h3>
@@ -230,8 +246,8 @@ export default function Gallery() {
                 {/* Double contents */}
                 {pinax[count].type==="doubleContent"&&<>
                     {pinax[count].content.map(cont=>  
-                        <div className="half-content-body" key={cont.id}>
-                            <div className="untitled-card with-padding">
+                        <div className="half-content-body">
+                            <div className="untitled-card with-padding" key={uuidv4()}>
                                 <h2>{cont.title}</h2>
                                 <ul>
                                     {cont.list.map(x=>
