@@ -146,15 +146,32 @@ const pinax = [
     }]
 
 function countReducer (state, action) {
+    let next_button = document.getElementById("next-button");
+    let prev_button = document.getElementById("prev-button");
+    var newState;
+
+    next_button.classList.remove("slider_button_disabled");
+    prev_button.classList.remove("slider_button_disabled");
+    next_button.classList.add("slider_button");
+    prev_button.classList.add("slider_button");
+
     switch (action.type) {
         case 'increment':
-            var newState = state!==pinax.length-1?state+1:state;
+            newState = state!==pinax.length-1?state+1:state;
             action.url==="/control"&&ws.send(`{"message":"${newState}", "action":"message"}`);
-            return newState;
+            if(newState === pinax.length - 1){
+                next_button.classList.add("slider_button_disabled");
+                next_button.classList.remove("slider_button");
+            }
+            break;
         case 'decrement':
-            var newState = state!==0?state-1:state;
+            newState = state!==0?state-1:state;
             action.url==="/control"&&ws.send(`{"message":"${newState}", "action":"message"}`);
-            return newState; 
+            if(newState === 0){
+                prev_button.classList.add("slider_button_disabled");
+                prev_button.classList.remove("slider_button");
+            }
+            break;
         case 'set':
             console.log("setted:", action.data)
             var newState = parseInt(action.data);
@@ -166,7 +183,10 @@ function countReducer (state, action) {
         default:
             throw new Error("This action is not supported.")
     }
+    
+    return newState;
 }
+
 export default function Gallery() {
     const [ count, dispatch ] = React.useReducer(countReducer, 0);
     const [ connected, setConnected ] = React.useState(false);
@@ -209,8 +229,8 @@ export default function Gallery() {
     }, [])
     console.log("Connected:", connected);
     return (
-        <div className="wrapper">
-            <div className="content">
+        <div id="wrapper">
+            <div id="content_wrapper">
                 {/* Titled contents */}
                 {pinax[count].type==="titledContent"&&<>
                     <div className="content-title">
@@ -268,8 +288,9 @@ export default function Gallery() {
                     </div>
                 }
             </div>
-            <button id="prev-button" onClick={()=>dispatch({type:'decrement', url})} disabled={count===0}><FaAngleLeft /></button>
-            <button id="next-button" onClick={()=>dispatch({type:'increment', url})} disabled={count===pinax.length-1}><FaAngleRight /></button>
+            <div id="change"></div>
+            <button id="prev-button" className="slider_button" onClick={()=>dispatch({type:'decrement', url})} disabled={count===0}><FaAngleLeft /></button>
+            <button id="next-button" className="slider_button" onClick={()=>dispatch({type:'increment', url})} disabled={count===pinax.length-1}><FaAngleRight /></button>
         </div>
     )
 }
